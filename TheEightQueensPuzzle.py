@@ -12,9 +12,9 @@ mutationRate = 0.9                    #this is the percentage of times mutation 
 
 crossOver = 0.5                       #this is the crossover point percentage
 
-target = [0,3,4,5,6,1,2,4]            #this is the target sequence
+target = "03456124"                   #this is the target sequence
 
-numberList = [0,1,2,3,4,5,6,7]        #this is the list of valid positions
+numberList = ['0','1','2','3','4','5','6','7']        #this is the list of valid positions
 
 topParentsRate = 0.5                  #this is the rate of top parents used for generation of next population
 
@@ -25,10 +25,10 @@ fitnessData = []                      #this is list for all the population's fit
 # function to populate intial pool of randomly generated sequences
 def PopulateIntialPool(totalPopulation):
     for outloop in range(totalPopulation):
-        randomData = []
+        randomData = ''
         for inloop in range(len(target)):
             selectedData = random.choice(numberList)
-            randomData.append(selectedData)
+            randomData = randomData + selectedData
         fitnessScore = getFitnessScore(randomData)
         populationData.append(randomData)
         fitnessData.append(fitnessScore)
@@ -56,8 +56,10 @@ def getCrossOver(parent1,parent2):
 
 # function to make a mutation to the sequnce based on mutationRate
 def getMutation(sequence):
+    listSequence = list(sequence) 
     if random.randint(0,100)/100 < mutationRate:
-        sequence[random.randint(0,len(target)-1)] = random.choice(numberList)
+        listSequence[random.randint(0,len(target)-1)] = random.choice(numberList)
+    sequence = ''.join(elem for elem in listSequence)
     return sequence
 
 
