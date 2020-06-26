@@ -12,7 +12,7 @@ mutationRate = 0.9                    #this is the percentage of times mutation 
 
 crossOver = 0.5                       #this is the crossover point percentage
 
-target = "03456124"                   #this is the target sequence
+lengthTarget = 8                   #this is the target sequence
 
 numberList = ['0','1','2','3','4','5','6','7']        #this is the list of valid positions
 
@@ -26,7 +26,7 @@ fitnessData = []                      #this is list for all the population's fit
 def PopulateIntialPool(totalPopulation):
     for outloop in range(totalPopulation):
         randomData = ''
-        for inloop in range(len(target)):
+        for inloop in range(lengthTarget):
             selectedData = random.choice(numberList)
             randomData = randomData + selectedData
         fitnessScore = getFitnessScore(randomData)
@@ -40,16 +40,67 @@ def PopulateIntialPool(totalPopulation):
 
 # function to get the fitness score of a sequence
 def getFitnessScore(data):
+    
+    N=8
+    board = [[0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0]]
+    
+    row = 0
     fitnessScore = 0
-    for inloop in range(len(target)):
-        if (data[inloop] == target[inloop]):
+    for x in list(data):
+        
+        col = int(x)
+        match = 1
+    
+        # Check up, down, left, right 
+        for i in range(N): 
+            if board[row][i] == 1: 
+                match = 0 
+            if board[i][col] == 1: 
+                match = 0
+                
+        # Check upper diagonal on left side 
+        for i, j in zip(range(row, -1, -1),  
+                        range(col, -1, -1)): 
+            if board[i][j] == 1: 
+                match = 0
+    
+        # Check upper diagonal on right side 
+        for i, j in zip(range(row, -1, -1),  
+                        range(col, N, 1)): 
+            if board[i][j] == 1: 
+                match = 0
+    
+        # Check lower diagonal on left side 
+        for i, j in zip(range(row, N, 1),  
+                        range(col, -1, -1)): 
+            if board[i][j] == 1: 
+                match = 0
+                
+        # Check lower diagonal on right side 
+        for i, j in zip(range(row, N, 1),  
+                        range(col, N, 1)): 
+            if board[i][j] == 1: 
+                match = 0
+                
+        if match == 1:
+            board[row][col] = match
             fitnessScore = fitnessScore + 1
+        
+        row = row + 1
+
+        
     return fitnessScore
-
-
+    
 # function to get crossover sequence of the given 2 sequences
 def getCrossOver(parent1,parent2):
-    crossOverPoint = int(crossOver*len(target))
+    crossOverPoint = int(crossOver*lengthTarget)
     child = parent1[0:crossOverPoint]+parent2[crossOverPoint:]
     return child
 
@@ -58,7 +109,7 @@ def getCrossOver(parent1,parent2):
 def getMutation(sequence):
     listSequence = list(sequence) 
     if random.randint(0,100)/100 < mutationRate:
-        listSequence[random.randint(0,len(target)-1)] = random.choice(numberList)
+        listSequence[random.randint(0,lengthTarget-1)] = random.choice(numberList)
     sequence = ''.join(elem for elem in listSequence)
     return sequence
 
@@ -101,7 +152,7 @@ for generation in range(generationCount):
     print('Generation : ',generation,
           ', Best Fitness Score : ',bestFitnessScore,
           ', Best Sequence : ', bestSequence)
-    if (bestFitnessScore == len(target)):
+    if (bestFitnessScore == lengthTarget):
         break
     #get next generation of sequences
     probDataFrame = generateNewPool(probDataFrame)
